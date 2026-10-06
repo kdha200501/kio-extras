@@ -317,11 +317,21 @@ KIO::WorkerResult ThumbnailProtocol::get(const QUrl &url)
     QImage img;
     QString plugin = metaData("plugin");
 
-    if ((plugin.isEmpty() || plugin.contains("directorythumbnail")) && m_mimeType == "inode/directory") {
-        img = thumbForDirectory(info.canonicalFilePath());
-        if (img.isNull()) {
-            return KIO::WorkerResult::fail(KIO::ERR_INTERNAL, i18n("Cannot create thumbnail for directory"));
-        }
+    // jacks-customizations: disabled the "previews on top of folders" overlay.
+    // Directory previews are rendered by thumbForDirectory() (a 2x2 grid of the
+    // folder's children composited over the folder icon) and are shared by the
+    // Plasma desktop and Dolphin. Commenting this branch out makes directories
+    // fall through to the generic path, which has no directory plugin and so
+    // yields no thumbnail -> folders show only their plain icon.
+    // if ((plugin.isEmpty() || plugin.contains("directorythumbnail")) && m_mimeType == "inode/directory") {
+    //     img = thumbForDirectory(info.canonicalFilePath());
+    //     if (img.isNull()) {
+    //         return KIO::WorkerResult::fail(KIO::ERR_INTERNAL, i18n("Cannot create thumbnail for directory"));
+    //     }
+    // } else if (false) {
+    if (m_mimeType == "inode/directory") {
+        // No overlay preview for folders.
+        return KIO::WorkerResult::fail(KIO::ERR_NO_CONTENT, i18n("Directory thumbnails are disabled"));
     } else {
         if (plugin.isEmpty()) {
             plugin = pluginForMimeType(m_mimeType).fileName();
