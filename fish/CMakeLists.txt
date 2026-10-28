@@ -39,13 +39,13 @@ if (MD5SUM_EXECUTABLE)
    endif ()
 
    if (WIN32)
-      set(FISH_GENERATOR "generate_fishcode.bat")
+      set(FISH_GENERATOR "${CMAKE_CURRENT_SOURCE_DIR}/generate_fishcode.bat")
    else ()
-      set(FISH_GENERATOR "generate_fishcode.sh")
+      set(FISH_GENERATOR sh "${CMAKE_CURRENT_SOURCE_DIR}/generate_fishcode.sh")
    endif ()
    set(fishcode_HDR "${CMAKE_CURRENT_BINARY_DIR}/fishcode.h")
    add_custom_command(OUTPUT ${fishcode_HDR}
-      COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/${FISH_GENERATOR} ARGS ${CMAKE_CURRENT_SOURCE_DIR}/fish.pl ${MD5SUM_EXECUTABLE} ${fishcode_HDR} "${CUT_ARG}"
+      COMMAND ${FISH_GENERATOR} ARGS ${CMAKE_CURRENT_SOURCE_DIR}/fish.pl ${MD5SUM_EXECUTABLE} ${fishcode_HDR} "${CUT_ARG}"
       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/fish.pl
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
    set_source_files_properties(${fishcode_HDR} PROPERTIES SKIP_AUTOMOC TRUE)
